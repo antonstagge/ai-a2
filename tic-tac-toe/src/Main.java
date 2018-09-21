@@ -19,6 +19,31 @@ import java.io.OutputStreamWriter;
  */
 public class Main {
     public static void main(String[] args) throws IOException {
+
+
+      GameState temp = new GameState();
+      temp.doMove(new Move(0, Constants.CELL_X));
+      temp.doMove(new Move(13, Constants.CELL_O));
+      System.err.println("HERE::");
+      System.err.println(temp.toString(Constants.CELL_X));
+      System.err.println("DONE");
+      temp.doMove(new Move(1, Constants.CELL_X));
+      temp.doMove(new Move(14, Constants.CELL_O));
+      temp.doMove(new Move(10, Constants.CELL_X));
+      temp.doMove(new Move(15, Constants.CELL_O));
+      System.err.println(temp.toString(Constants.CELL_X));
+      Vector<GameState> v = new Vector<>();
+      temp.findPossibleMoves(v);
+      GameState best =  AlphaBeta.alphaBetaMinMax(temp, v, new Deadline(System.currentTimeMillis() + 99999));
+
+      System.err.println("player " + temp.getNextPlayer());
+      System.err.println("BEST MOVE : ");
+      System.err.println(best.toString(temp.getNextPlayer()));
+
+      if (true) return;
+
+
+
       /* Parse parameters */
       boolean init = false;
       boolean verbose = false;
