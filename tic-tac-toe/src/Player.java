@@ -19,11 +19,17 @@ public class Player {
             return new GameState(gameState, new Move());
         }
 
+        // Let one player play random for testing.
+        if (gameState.getNextPlayer() == Constants.CELL_O) {
+            Random random = new Random();
+            return nextStates.elementAt(random.nextInt(nextStates.size()));
+        }
+
         /**
          * Here you should write your algorithms to get the best next move, i.e.
          * the best next state. This skeleton returns a random move instead.
          */
         Random random = new Random();
-        return nextStates.elementAt(random.nextInt(nextStates.size()));
+        return nextStates.elementAt(0);
     }    
 }
