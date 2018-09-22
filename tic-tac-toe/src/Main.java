@@ -20,17 +20,21 @@ import java.io.OutputStreamWriter;
 public class Main {
     public static void main(String[] args) throws IOException {
 
-
+      /*
       GameState temp = new GameState();
       temp.doMove(new Move(0, Constants.CELL_X));
       temp.doMove(new Move(13, Constants.CELL_O));
-      System.err.println("HERE::");
-      System.err.println(temp.toString(Constants.CELL_X));
-      System.err.println("DONE");
       temp.doMove(new Move(1, Constants.CELL_X));
       temp.doMove(new Move(14, Constants.CELL_O));
       temp.doMove(new Move(10, Constants.CELL_X));
       temp.doMove(new Move(15, Constants.CELL_O));
+      temp.doMove(new Move(2, Constants.CELL_X));
+      System.err.println("BEFORE");
+      System.err.println(temp.toString(Constants.CELL_X));
+      int he_x = AlphaBeta.heuristic(temp, Constants.CELL_X);
+      int he_o = AlphaBeta.heuristic(temp, Constants.CELL_O);
+      System.err.println("HEURISTIC x: " + he_x + "  HE_O: " + he_o);
+      if (true) return;
       System.err.println(temp.toString(Constants.CELL_X));
       Vector<GameState> v = new Vector<>();
       temp.findPossibleMoves(v);
@@ -41,6 +45,7 @@ public class Main {
       System.err.println(best.toString(temp.getNextPlayer()));
 
       if (true) return;
+      */
 
 
 

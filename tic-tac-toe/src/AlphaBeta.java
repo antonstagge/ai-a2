@@ -8,7 +8,7 @@ public class AlphaBeta {
     private static Deadline dl;
 
     public static GameState alphaBetaMinMax(GameState state, Vector<GameState> nextStates, Deadline deadline) {
-        int maxDepth = 1;
+        int maxDepth = 7;
         int init_alpha = -Integer.MAX_VALUE;
         int init_beta = Integer.MAX_VALUE;
         originalPlayer = state.getNextPlayer();
@@ -26,7 +26,7 @@ public class AlphaBeta {
         Vector<GameState> nextMoves = new Vector<>();
         state.findPossibleMoves(nextMoves);
 
-        if (depth == 0 || nextMoves.size() == 0  /*|| dl.timeUntil()/1000000 < 50*/) {
+        if (depth == 0 || nextMoves.size() == 0  || dl.timeUntil()/1000000 < 100) {
             // termial state or end of search depth
             if (dl.timeUntil()/1000000 < 50) {
                 //System.err.println("dl (" + dl.timeUntil()/1000000 + ") ran out on depth: " + depth);
@@ -39,9 +39,11 @@ public class AlphaBeta {
             ReturnTuple v = new ReturnTuple(-Integer.MAX_VALUE, -1);
             for (int child = 0; child < nextMoves.size(); ++child) {
                 ReturnTuple current = alphabeta(nextMoves.get(child), depth-1, alpha, beta, Constants.CELL_O, child);
+                /*
                 System.err.println("FOR CHILD ");
                 System.err.println(nextMoves.get(child).toString(player));
                 System.err.println("got heuristic: " + current.value);
+                */
                 if (current.value > v.value) {
                     v = current;
                 }
@@ -82,11 +84,13 @@ public class AlphaBeta {
     }
 
     public static int heuristic(GameState state, int player) {
+        //System.err.println("Heu for : " + player);
         int row = 0;
         for (int y = 0; y < GameState.BOARD_SIZE; ++y) {
             int rowPoints = 0;
             for (int x = 0; x < GameState.BOARD_SIZE; ++x) {
-                int marked = state.at(x,y);
+                int marked = state.at(y,x);
+                //System.err.println("Marked row at (" + x + ", " + y + ") is " + marked );
                 if (marked == player) {
                     rowPoints += (x+1)*2;
                 } else if (marked == Player.otherPlayer(player)) {
@@ -94,13 +98,15 @@ public class AlphaBeta {
                     break;
                 }
             }
+            //System.err.println("row " + y + " got " + rowPoints);
             row += rowPoints;
         }
+        //System.err.println("total row: " + row);
         int col = 0;
         for (int y = 0; y < GameState.BOARD_SIZE; ++y) {
             int colPoints = 0;
             for (int x = 0; x < GameState.BOARD_SIZE; ++x) {
-                int marked = state.at(x,y);
+                int marked = state.at(y,x);
                 if (marked == player) {
                     colPoints += (x+1)*2;
                 } else if (marked == Player.otherPlayer(player)) {
@@ -111,6 +117,7 @@ public class AlphaBeta {
             col += colPoints;
 
         }
+        //System.err.println("total col: " + col);
 
         int diaOne = 0;
         int diaTwo = 0;
@@ -123,6 +130,7 @@ public class AlphaBeta {
                 break;
             }
         }
+
         for (int i = 0; i < GameState.BOARD_SIZE; ++i) {
 
             if (state.at((GameState.BOARD_SIZE-1)-i, i) == player) {
@@ -133,6 +141,8 @@ public class AlphaBeta {
             }
         }
 
+        //System.err.println("total diaOne: " + diaOne);
+        //System.err.println("total diaTwo: " + diaTwo);
 
 
         return row + col + diaOne + diaTwo;
