@@ -13,19 +13,35 @@ public class AlphaBeta {
         int init_beta = Integer.MAX_VALUE;
         originalPlayer = state.getNextPlayer();
         dl = deadline;
+        GameState best = null;
         System.err.println("Time begin: " + deadline.timeUntil()/1000000);
-        int max = -Integer.MAX_VALUE;
-        int max_idx = -1;
-        for (int child = 0; child < nextStates.size(); ++child) {
-            int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, originalPlayer);
-            if (current > max) {
-                max = current;
-                max_idx = child;
+        if (originalPlayer == Constants.CELL_X) {
+            int max = -Integer.MAX_VALUE;
+            int max_idx = -1;
+            for (int child = 0; child < nextStates.size(); ++child) {
+                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, originalPlayer);
+                if (current > max) {
+                    max = current;
+                    max_idx = child;
+                }
             }
+
+            best = nextStates.get(max_idx);
+        } else {
+            int min = Integer.MAX_VALUE;
+            int min_idx = -1;
+            for (int child = 0; child < nextStates.size(); ++child) {
+                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, originalPlayer);
+                if (current < min) {
+                    min = current;
+                    min_idx = child;
+                }
+            }
+
+            best = nextStates.get(min_idx);
         }
+
         System.err.println("Time left: " + deadline.timeUntil()/1000000);
-        System.err.println("    CHOSE INDEX: " + max_idx);
-        GameState best = nextStates.get(max_idx);
         return best;
 
     }
@@ -156,16 +172,5 @@ public class AlphaBeta {
 
         return rowTotal + colTotal + diaOne + diaTwo;
     }
-
-    private static class ReturnTuple {
-        public int value;
-        public int cameFrom;
-
-        ReturnTuple(int v, int c) {
-            value = v;
-            cameFrom = c;
-        }
-    }
-
 
 }
