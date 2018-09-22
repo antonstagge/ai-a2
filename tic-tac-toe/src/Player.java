@@ -28,6 +28,7 @@ public class Player {
         */
 
 
+
         /**
          * Here you should write your algorithms to get the best next move, i.e.
          * the best next state. This skeleton returns a random move instead.

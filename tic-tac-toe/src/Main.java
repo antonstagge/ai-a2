@@ -21,7 +21,8 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
       /*
-      GameState temp = new GameState();
+
+      GameState temp = new GameState("xoxxo.x.xo...o.o 0_15_2 x");
       temp.doMove(new Move(0, Constants.CELL_X));
       temp.doMove(new Move(13, Constants.CELL_O));
       temp.doMove(new Move(1, Constants.CELL_X));
@@ -29,13 +30,13 @@ public class Main {
       temp.doMove(new Move(10, Constants.CELL_X));
       temp.doMove(new Move(15, Constants.CELL_O));
       temp.doMove(new Move(2, Constants.CELL_X));
+
       System.err.println("BEFORE");
       System.err.println(temp.toString(Constants.CELL_X));
       int he_x = AlphaBeta.heuristic(temp, Constants.CELL_X);
       int he_o = AlphaBeta.heuristic(temp, Constants.CELL_O);
-      System.err.println("HEURISTIC x: " + he_x + "  HE_O: " + he_o);
-      if (true) return;
-      System.err.println(temp.toString(Constants.CELL_X));
+      System.err.println("HEURISTIC HE_X: " + he_x + "  HE_O: " + he_o);
+      //if (true) return;
       Vector<GameState> v = new Vector<>();
       temp.findPossibleMoves(v);
       GameState best =  AlphaBeta.alphaBetaMinMax(temp, v, new Deadline(System.currentTimeMillis() + 99999));
