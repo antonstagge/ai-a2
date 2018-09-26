@@ -115,16 +115,16 @@ public class AlphaBeta {
         // For every Row
         int returnValue = 0;
 
-        //If player has center squares, it is good
-        int valueForCenterPiece = 0;
-        if(state.at(1, 1, 1) == player) returnValue+= valueForCenterPiece;
-        if(state.at(1, 1, 2) == player) returnValue+= valueForCenterPiece;
-        if(state.at(1, 2, 2) == player) returnValue+= valueForCenterPiece;
-        if(state.at(2, 2, 2) == player) returnValue+= valueForCenterPiece;
-        if(state.at(2, 1, 1) == player) returnValue+= valueForCenterPiece;
-        if(state.at(2, 2, 1) == player) returnValue+= valueForCenterPiece;
-        if(state.at(2, 1, 2) == player) returnValue+= valueForCenterPiece;
-        if(state.at(1, 2, 1) == player) returnValue+= valueForCenterPiece;
+        //If player has corner squares, it is good
+        int valueForCornerPiece = 1000;
+        if(state.at(0, 0, 0) == player) returnValue+= valueForCornerPiece;
+        if(state.at(3, 0, 0) == player) returnValue+= valueForCornerPiece;
+        if(state.at(0, 3, 0) == player) returnValue+= valueForCornerPiece;
+        if(state.at(3, 3, 0) == player) returnValue+= valueForCornerPiece;
+        if(state.at(0, 0, 3) == player) returnValue+= valueForCornerPiece;
+        if(state.at(3, 0, 3) == player) returnValue+= valueForCornerPiece;
+        if(state.at(0, 3, 3) == player) returnValue+= valueForCornerPiece;
+        if(state.at(3, 3, 3) == player) returnValue+= valueForCornerPiece;
 
 
         //For every layer
