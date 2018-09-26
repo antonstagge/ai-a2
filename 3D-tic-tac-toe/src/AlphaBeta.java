@@ -67,13 +67,13 @@ public class AlphaBeta {
 
         if (nextMoves.size() == 0 || depth == 0) {
             //termial state or end of search depth
-            // if (state.isXWin()) {
-            //     return Integer.MAX_VALUE;
-            // } else if (state.isOWin()) {
-            //     return Integer.MIN_VALUE;
-            // } else {
+            if (state.isXWin()) {
+                return Integer.MAX_VALUE;
+            } else if (state.isOWin()) {
+                return Integer.MIN_VALUE;
+            } else {
                 return heuristic(state, Constants.CELL_X) - heuristic(state, Constants.CELL_O);
-            //}
+            }
         }
 
         if (player == Constants.CELL_X) {
@@ -275,67 +275,59 @@ public class AlphaBeta {
         }
         
         //First cross diagonal
-        int firstCrossValue = 0;
         int firstCrossCount = 0;
         for (int index = 0; index < GameState.BOARD_SIZE; ++index) {
             if (state.at(index, index, index) == player) {
                 ++firstCrossCount;
-                firstCrossValue = valueForMarks(firstCrossCount);
             } else if (state.at(index, index, index) == Player.otherPlayer(player)) {
-                firstCrossValue = 0;
+                firstCrossCount = 0;
                 break;
             }
         }
 
-        returnValue += firstCrossValue;
+        returnValue += valueForMarks(firstCrossCount);
 
         //Second cross diagonal
-        int secondCrossValue = 0;
         int secondCrossCount = 0;
         for (int index = 0; index < GameState.BOARD_SIZE; ++index) {
             int invers = GameState.BOARD_SIZE-1-index;
             if (state.at(invers, index, index) == player) {
                 ++secondCrossCount;
-                secondCrossValue = valueForMarks(secondCrossCount);
             } else if (state.at(invers, index, index) == Player.otherPlayer(player)) {
-                secondCrossValue = 0;
+                secondCrossCount = 0;
                 break;
             }
         }
 
-        returnValue += secondCrossValue;
+        returnValue += valueForMarks(secondCrossCount);
 
         //third cross diagonal
-        int thirdCrossValue = 0;
         int thirdCrossCount = 0;
         for (int index = 0; index < GameState.BOARD_SIZE; ++index) {
             int invers = GameState.BOARD_SIZE-1-index;
             if (state.at(index, invers, index) == player) {
                 ++thirdCrossCount;
-                thirdCrossValue = valueForMarks(thirdCrossCount);
             } else if (state.at(index, invers, index) == Player.otherPlayer(player)) {
-                thirdCrossValue = 0;
+                thirdCrossCount = 0;
                 break;
             }
         }
 
-        returnValue += thirdCrossValue;
+        returnValue += valueForMarks(thirdCrossCount);
 
         //fourth cross diagonal
-        int fourthCrossValue = 0;
         int fourthCrossCount = 0;
         for (int index = 0; index < GameState.BOARD_SIZE; ++index) {
             int invers = GameState.BOARD_SIZE-1-index;
             if (state.at(index, index, invers) == player) {
                 ++fourthCrossCount;
-                fourthCrossValue = valueForMarks(fourthCrossCount);
             } else if (state.at(index, index, invers) == Player.otherPlayer(player)) {
-                fourthCrossValue = 0;
+                fourthCrossCount = 0;
                 break;
             }
         }
 
-        returnValue += fourthCrossValue;
+        returnValue += valueForMarks(fourthCrossCount);
 
         return returnValue;
         
