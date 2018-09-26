@@ -31,7 +31,11 @@ public class Player {
          * Here you should write your algorithms to get the best next move, i.e.
          * the best next state. This skeleton returns a random move instead.
          */
-        Random random = new Random();
-        return nextStates.elementAt(0);
-    }    
+
+        return AlphaBeta.alphaBetaMinMax(gameState, nextStates, deadline);
+    }
+    
+    public static int otherPlayer(int player) {
+        return player == Constants.CELL_X ? Constants.CELL_O : Constants.CELL_X;
+    }
 }
