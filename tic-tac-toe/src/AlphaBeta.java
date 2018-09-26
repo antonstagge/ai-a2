@@ -8,18 +8,19 @@ public class AlphaBeta {
     private static Deadline dl;
 
     public static GameState alphaBetaMinMax(GameState state, Vector<GameState> nextStates, Deadline deadline) {
-        int maxDepth = 100;
-        int init_alpha = -Integer.MAX_VALUE;
+        int maxDepth = 16;
+        int init_alpha = Integer.MIN_VALUE;
         int init_beta = Integer.MAX_VALUE;
         originalPlayer = state.getNextPlayer();
         dl = deadline;
+
         GameState best = null;
-        System.err.println("Time begin: " + deadline.timeUntil()/1000000);
-        if (originalPlayer == Constants.CELL_X) {
+
+        if (state.getNextPlayer() == Constants.CELL_X) {
             int max = -Integer.MAX_VALUE;
             int max_idx = -1;
             for (int child = 0; child < nextStates.size(); ++child) {
-                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, originalPlayer);
+                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, Constants.CELL_O);
                 if (current > max) {
                     max = current;
                     max_idx = child;
@@ -31,7 +32,7 @@ public class AlphaBeta {
             int min = Integer.MAX_VALUE;
             int min_idx = -1;
             for (int child = 0; child < nextStates.size(); ++child) {
-                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, originalPlayer);
+                int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta, Constants.CELL_X);
                 if (current < min) {
                     min = current;
                     min_idx = child;
@@ -41,31 +42,30 @@ public class AlphaBeta {
             best = nextStates.get(min_idx);
         }
 
-        System.err.println("Time left: " + deadline.timeUntil()/1000000);
         return best;
-
     }
 
     private static int alphabeta(GameState state, int depth, int alpha, int beta, int player) {
         Vector<GameState> nextMoves = new Vector<>();
         state.findPossibleMoves(nextMoves);
 
-        if (depth == 0 || nextMoves.size() == 0  || dl.timeUntil()/1000000 < 40) {
+        if (nextMoves.size() == 0 /*|| depth == 0*/  ) {
             // termial state or end of search depth
-            int value = heuristic(state, originalPlayer) - heuristic(state, Player.otherPlayer(originalPlayer));
-            return value;
+            if (state.isXWin()) {
+                return 1;
+            } else if (state.isOWin()) {
+                return -1;
+            } else {
+                return 0;
+            }
         }
 
         if (player == Constants.CELL_X) {
             int v = -Integer.MAX_VALUE;
             for (int child = 0; child < nextMoves.size(); ++child) {
-                int current = alphabeta(nextMoves.get(child), depth-1, alpha, beta, Constants.CELL_O);
-                if (current > v) {
-                    v = current;
-                }
-                if (v > alpha) {
-                    alpha = v;
-                }
+                v = Math.max(v, alphabeta(nextMoves.get(child), depth-1, alpha, beta, Constants.CELL_O));
+
+                alpha = Math.max(v, alpha);
 
                 if (beta <= alpha) {
                     break;
@@ -78,14 +78,9 @@ public class AlphaBeta {
         if (player == Constants.CELL_O) {
             int v = Integer.MAX_VALUE;
             for (int child = 0; child < nextMoves.size(); ++child) {
-                int current = alphabeta(nextMoves.get(child), depth-1, alpha, beta, Constants.CELL_X);
+                v = Math.min(v, alphabeta(nextMoves.get(child), depth-1, alpha, beta, Constants.CELL_X));
 
-                if (current < v) {
-                    v = current;
-                }
-                if (v < beta) {
-                    beta = v;
-                }
+                beta = Math.min(v, beta);
 
                 if (beta <= alpha) {
                     break;
