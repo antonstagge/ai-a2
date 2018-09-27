@@ -79,6 +79,7 @@ public class AlphaBeta {
         if (nextMoves.size() == 0 || depth == 0) {
             if (state.isRedWin()) v = Integer.MAX_VALUE;
             else if (state.isWhiteWin()) v = Integer.MIN_VALUE;
+            else if (state.isDraw()) v = 0;
             else {
                 v = heuristic(state);
             }
@@ -117,21 +118,58 @@ public class AlphaBeta {
 
         int red_points = 0;
         int white_points = 0;
+        boolean onlyKingsLeft = true;
         // Count pieces Kings are worth 5 and regular pieces 3.
         for (int i = 0; i < state.NUMBER_OF_SQUARES; i++) {
             int piece = state.get(i);
             if (isRedPiece(piece)) {
                 red_points += 2;
+                onlyKingsLeft = false;
             } else if (isRedKing(piece)) {
-                red_points += 5;
+                red_points += 10;
             } else if (isWhitePiece(piece)) {
                 white_points += 2;
+                onlyKingsLeft = false;
             } else if (isWhiteKing(piece)) {
-                white_points += 5;
+                white_points += 10;
             }
         }
 
         value += (int) Math.pow(10,5)*red_points - (int) Math.pow(10,5)*white_points;
+
+
+        //Only kings left
+        if(onlyKingsLeft) {
+            int numberOfRedKings = (int) red_points/10;
+            int numberOfWhiteKings = (int) white_points/10;
+            RowCol[] positionsOfRedKings = new RowCol[numberOfRedKings];
+            int redIndex = 0;
+            RowCol[] positionsOfWhiteKings = new RowCol[numberOfWhiteKings];
+            int whiteIndex = 0;
+            for (int row = 0; row < 8; row++) {
+                for(int column = 0; column < 8; column++) {
+                    int piece = state.get(row, column);
+                    if((isRedKing(piece))) {
+                        RowCol thisPosition = new RowCol(row, column);
+                        positionsOfRedKings[redIndex] = thisPosition;
+                        redIndex ++;
+                    }
+                    if((isWhiteKing(piece))) {
+                        RowCol thisPosition = new RowCol(row, column);
+                        positionsOfWhiteKings[whiteIndex] = thisPosition;
+                        whiteIndex ++;
+                    }
+                }
+                
+            }
+
+            int distanceBetweenKings = calculateDistanceBetweenAll(positionsOfRedKings, positionsOfWhiteKings);
+            if(numberOfRedKings > numberOfWhiteKings){
+                value -= Math.pow(10, 4)*distanceBetweenKings; 
+            } else if (numberOfRedKings < numberOfWhiteKings) {
+                value += Math.pow(10, 4)*distanceBetweenKings;
+            }
+        }
 
         red_points = 0;
         int red_count = 0;
@@ -155,6 +193,31 @@ public class AlphaBeta {
 
         value += (int) Math.pow(10,4)*red_points - (int) Math.pow(10,4)*white_points;
 
+        //Corners
+        red_points = 0;
+        white_points = 0;
+        for (int i = 0; i < state.NUMBER_OF_SQUARES; i++) {
+            int piece = state.get(i);
+            if((isRedPiece(piece) || isRedKing(piece)) && isCorner(piece)) red_points++;
+            if((isWhitePiece(piece) || isWhiteKing(piece)) && isCorner(piece)) white_points++;
+        }
+
+        value += (int) Math.pow(10, 4)*red_points - (int) Math.pow(10, 4)*white_points;
+
+
+        //Edges
+        red_points = 0;
+        white_points = 0;
+        for (int i = 0; i < state.NUMBER_OF_SQUARES; i++) {
+            int piece = state.get(i);
+            if((isRedPiece(piece) || isRedKing(piece)) && isEdge(piece)) red_points++;
+            if((isWhitePiece(piece) || isWhiteKing(piece)) && isEdge(piece)) white_points++;
+        }
+
+        value += (int) Math.pow(10, 4)*red_points - (int) Math.pow(10, 4)*white_points;
+
+        
+        
         return value;
     }
 
@@ -174,12 +237,46 @@ public class AlphaBeta {
         return  val == (Constants.CELL_WHITE | Constants.CELL_KING);
     }
 
+    public static boolean isCorner(int val) {
+        return val == 3 || val == 28 ;
+    }
+
+    public static boolean isEdge(int val) {
+        return val == 0 || val == 1 || val == 2 || val == 4 || val == 12 || val == 20 || val == 11 || val == 19 || val == 27 || val == 29 || val == 30 || val == 31;
+    }
+
+    public static int calculateDistanceBetweenAll(RowCol[] redPositions, RowCol[] whitePositions){
+        int sumOfDistances = 0;
+        for(int i = 0; i < redPositions.length; i++){
+            RowCol currentRedPosition = redPositions[i];
+            for(int j = 0; j < whitePositions.length; j++){
+                RowCol currentWhitePosition = whitePositions[j];
+                sumOfDistances += calculateDistance(currentRedPosition, currentWhitePosition);
+            }
+        }
+        return sumOfDistances;
+    }
+
+    public static int calculateDistance(RowCol position, RowCol otherPosition) {
+        return Math.abs(position.row - otherPosition.row) + Math.abs(position.column - otherPosition.column);
+    }
+
     public static class GameStateCompare implements Comparator<GameState> {
 
         @Override
         public int compare(GameState o1, GameState o2) {
             // write comparison logic here like below , it's just a sample
             return ((Integer)heuristic(o1)).compareTo((Integer) heuristic(o2));
+        }
+    }
+
+    public static class RowCol {
+        public int row;
+        public int column;
+
+        public RowCol(int r, int c){
+            row = r;
+            column = c;
         }
     }
 }
