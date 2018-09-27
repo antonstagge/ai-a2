@@ -5,7 +5,7 @@ import java.util.Date;
 
 /**
  * Starts the game for one client.
- * 
+ *
  * Note:
  * 		Use the verbose flag for outputting game information.
  * 		Use the fast flag for using 100ms move deadline instead of 1000ms.
@@ -16,6 +16,22 @@ import java.util.Date;
 public class Main {
 
   public static void main(String[] args) throws IOException {
+
+    /*
+    GameState temp = new GameState("..rr..rr...rr......rw..RW..www.. 1_30_23 w 50");
+    System.err.println(temp.get(1, 6));
+    for (int r = 0; r < 8; r++) {
+        for (int c = 0; c < 8; c++) {
+            System.err.println("r:" + r + " c:" + c + " has: " + temp.get(r, c));
+        }
+    }
+    System.err.println(temp.get(23));
+    System.err.println(temp.get(24));
+    int h = AlphaBeta.heuristic(temp);
+    System.err.println(h);
+    if (true) return;
+    */
+
     /* Parse parameters */
     boolean init = false;
     boolean verbose = false;
@@ -94,7 +110,7 @@ public class Main {
 
       /* Send the next move */
       String output_message = output_state.toMessage();
-      
+
       //System.err.println("Sending: '" + output_message + "'");
       System.out.println(output_message);
 

@@ -1,4 +1,5 @@
 import java.util.*;
+import java.util.concurrent.TimeoutException;
 
 public class Player {
     /**
@@ -24,6 +25,18 @@ public class Player {
          * Here you should write your algorithms to get the best next move, i.e.
          * the best next state. This skeleton returns a random move instead.
          */
-        return AlphaBeta.alphaBetaMinMax(state, nextStates, deadline);
+         AlphaBeta.init();
+         GameState best = null;
+         int d = 1;
+         try {
+             while (true) {
+                 best = AlphaBeta.alphaBetaMinMax(state, nextStates, deadline, d);
+                 d++;
+             }
+         } catch(TimeoutException e) {
+             // System.err.println("Got to depth: " + d);
+         }
+
+         return best;
     }
 }
