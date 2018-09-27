@@ -13,11 +13,6 @@ public class AlphaBeta {
     private static Deadline dl;
     private static HashMap map;
 
-    public static void init() {
-        map = new HashMap<String, RepeatedState>();
-    }
-
-
     public static GameState alphaBetaMinMax(GameState state, Vector<GameState> nextStates, Deadline deadline, int maxDepth) throws TimeoutException {
         int init_alpha = Integer.MIN_VALUE;
         int init_beta = Integer.MAX_VALUE;
@@ -70,30 +65,16 @@ public class AlphaBeta {
 
     private static int alphabeta(GameState state, int depth, int alpha, int beta) throws TimeoutException {
 
-        if (dl.timeUntil()/1000000 < 20) throw new TimeoutException("about to run out");
-
-        if (map.containsKey(state.toMessage())) {
-            RepeatedState s = (RepeatedState) map.get(state.toMessage());
-            if (s.depth >= depth) {
-                if (s.type == Type.LOWER)
-                    if (s.value >= beta) return s.value;
-                if (s.type == Type.UPPER)
-                    if (s.value <= alpha) return s.value;
-
-                alpha = Math.max(alpha, s.value);
-                beta = Math.min(beta, s.value);
-            }
-        }
+        if (dl.timeUntil()/1000000 < 2) throw new TimeoutException("about to run out");
 
         Vector<GameState> nextMoves = new Vector<>();
         state.findPossibleMoves(nextMoves);
 
+        // order on heuristic
         Collections.sort(nextMoves, new GameStateCompare());
 
         int player = state.getNextPlayer();
 
-        int orgAlpha = alpha;
-        int orgBeta = beta;
         int v;
         if (nextMoves.size() == 0 || depth == 0) {
             if (state.isRedWin()) v = Integer.MAX_VALUE;
@@ -128,17 +109,6 @@ public class AlphaBeta {
                 }
             }
         }
-
-        if (v <= orgAlpha) {
-            RepeatedState s = new RepeatedState(v, depth, Type.UPPER);
-            map.put(state.toMessage(), s);
-        } else if (v > orgAlpha && v < orgBeta) {
-            RepeatedState s = new RepeatedState(v, depth, Type.EXACT);
-            map.put(state.toMessage(), s);
-        } else if (v >= orgBeta) {
-            RepeatedState s = new RepeatedState(v, depth, Type.LOWER);
-            map.put(state.toMessage(), s);
-        }
         return v;
     }
 
@@ -151,11 +121,11 @@ public class AlphaBeta {
         for (int i = 0; i < state.NUMBER_OF_SQUARES; i++) {
             int piece = state.get(i);
             if (isRedPiece(piece)) {
-                red_points += 3;
+                red_points += 2;
             } else if (isRedKing(piece)) {
                 red_points += 5;
             } else if (isWhitePiece(piece)) {
-                white_points += 3;
+                white_points += 2;
             } else if (isWhiteKing(piece)) {
                 white_points += 5;
             }
@@ -211,20 +181,5 @@ public class AlphaBeta {
             // write comparison logic here like below , it's just a sample
             return ((Integer)heuristic(o1)).compareTo((Integer) heuristic(o2));
         }
-    }
-
-    public static class RepeatedState {
-        int value;
-        int depth;
-        Type type;
-
-        RepeatedState(int v, int d, Type t) {
-            value = v;
-            type = t;
-        }
-    }
-
-    public enum Type {
-        UPPER, EXACT, LOWER
     }
 }
