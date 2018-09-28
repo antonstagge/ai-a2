@@ -20,10 +20,11 @@ public class AlphaBeta {
 
         GameState best = null;
 
-        if (state.getNextPlayer() == Constants.CELL_RED) {
+        if (isRed(state.getNextPlayer())) {
+            Collections.sort(nextStates, new GameStateCompare());
             int max = Integer.MIN_VALUE;
             int max_idx = -1;
-            for (int child = 0; child < nextStates.size(); ++child) {
+            for (int child = nextStates.size()-1; child >= 0; --child) {
                 int current = alphabeta(nextStates.get(child), maxDepth, init_alpha, init_beta);
                 if (current == Integer.MAX_VALUE) return nextStates.get(child);
                 if (current > max) {
@@ -39,7 +40,8 @@ public class AlphaBeta {
             }
 
             best = nextStates.get(max_idx);
-        } else {
+        } else if (isWhite(state.getNextPlayer())){
+            Collections.sort(nextStates, new GameStateCompare());
             int min = Integer.MAX_VALUE;
             int min_idx = -1;
             for (int child = 0; child < nextStates.size(); ++child) {
@@ -71,11 +73,11 @@ public class AlphaBeta {
         state.findPossibleMoves(nextMoves);
 
         // order on heuristic
-        Collections.sort(nextMoves, new GameStateCompare());
+        //Collections.sort(nextMoves, new GameStateCompare());
 
         int player = state.getNextPlayer();
 
-        int v;
+        int v = -1;
         if (nextMoves.size() == 0 || depth == 0) {
             if (state.isRedWin()) v = Integer.MAX_VALUE;
             else if (state.isWhiteWin()) v = Integer.MIN_VALUE;
@@ -83,9 +85,10 @@ public class AlphaBeta {
             else {
                 v = heuristic(state);
             }
-        } else if (player == Constants.CELL_RED) {
+        } else if (isRed(player)) {
+            Collections.sort(nextMoves, new GameStateCompare());
             v = Integer.MIN_VALUE;
-            for (int child = 0; child < nextMoves.size(); ++child) {
+            for (int child = nextMoves.size()-1; child >= 0; --child) {
 
                 v = Math.max(v, alphabeta(nextMoves.get(child), depth-1, alpha, beta));
                 if (v == Integer.MAX_VALUE) return v;
@@ -96,8 +99,10 @@ public class AlphaBeta {
                     break;
                 }
             }
-        } else {
+            return v;
+        } else if (isWhite(player)){
             // white player
+            Collections.sort(nextMoves, new GameStateCompare());
             v = Integer.MAX_VALUE;
             for (int child = 0; child < nextMoves.size(); ++child) {
 
@@ -109,6 +114,7 @@ public class AlphaBeta {
                     break;
                 }
             }
+            return v;
         }
         return v;
     }
@@ -229,12 +235,20 @@ public class AlphaBeta {
         return  val == (Constants.CELL_RED | Constants.CELL_KING);
     }
 
+    public static boolean isRed(int val) {
+        return isRedPiece(val) || isRedKing(val);
+    }
+
     public static boolean isWhitePiece(int val) {
         return  val == Constants.CELL_WHITE;
     }
 
     public static boolean isWhiteKing(int val) {
         return  val == (Constants.CELL_WHITE | Constants.CELL_KING);
+    }
+
+    public static boolean isWhite(int val) {
+        return isWhitePiece(val) || isWhiteKing(val);
     }
 
     public static boolean isCorner(int val) {
